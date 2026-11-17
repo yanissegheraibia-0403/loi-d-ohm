@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Stagiaire chez l'électricien</title>
+<meta name="description" content="TP virtuel de Seconde MTNE : 8 interventions d'un stagiaire électricien pour utiliser la loi d'Ohm, la puissance et l'énergie électriques.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+<style>
+/* Une mission visible à la fois (onglets). Chaque mission : contexte, consignes, simulateur (schéma SVG + afficheurs), à retenir. */
+:root{
+  --paper:#f7f7f5; --surface:#ffffff; --ink:#111417; --muted:#5d636b; --line:#d9dbde;
+  --accent:#1c6db5; --accent-ink:#ffffff; --accent-soft:#e6f0f9;
+  --lcd:#dfe7d6; --lcd-ink:#1b2416; --lamp:#f5c518; --led:#e0242b;
+  --ok:#1d7a45; --ok-soft:#e3f3ea; --warn:#9a5b00; --warn-soft:#fbf0dc; --danger:#b3261e; --danger-soft:#fbe5e3; --hot-soft:#f6d2b0;
+  --f-body:"Open Sans","Segoe UI",Arial,sans-serif; --f-mono:"Courier New",Courier,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark;
+  --paper:#111418; --surface:#1a1e24; --ink:#e8eaed; --muted:#a2a8b0; --line:#2e343c;
+  --accent:#6cb2ef; --accent-ink:#0b1420; --accent-soft:#18293a;
+  --lcd:#27321f; --lcd-ink:#d6f0c4; --lamp:#ffd84a; --led:#ff4a50;
+  --ok:#57c38a; --ok-soft:#14291e; --warn:#f0b35a; --warn-soft:#2c2214; --danger:#ff7b72; --danger-soft:#33191a; --hot-soft:#3d2614;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --paper:#111418; --surface:#1a1e24; --ink:#e8eaed; --muted:#a2a8b0; --line:#2e343c;
+  --accent:#6cb2ef; --accent-ink:#0b1420; --accent-soft:#18293a;
+  --lcd:#27321f; --lcd-ink:#d6f0c4; --lamp:#ffd84a; --led:#ff4a50;
+  --ok:#57c38a; --ok-soft:#14291e; --warn:#f0b35a; --warn-soft:#2c2214; --danger:#ff7b72; --danger-soft:#33191a; --hot-soft:#3d2614;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 56px}
+.wrap{max-width:980px;margin:0 auto}
+.fiche{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 16px;font-family:var(--f-mono);font-size:.82rem;color:var(--muted);padding-block:22px 10px;border-bottom:1px solid var(--line)}
+header.top{padding-block:28px 4px;display:grid;gap:10px}
+.theme-label{font-family:var(--f-mono);font-weight:700;font-size:.95rem;margin:0}
+h1{font-size:clamp(1.8rem,5vw,2.5rem);font-weight:700;line-height:1.15;margin:0;text-wrap:balance;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+h2{font-size:1.25rem;margin:0 0 6px;text-decoration:underline;text-underline-offset:4px;text-wrap:balance}
+.lead{margin:0;max-width:68ch;color:var(--muted)}
+.code-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:8px;padding:14px 16px;border-radius:8px;background:var(--accent-soft)}
+.code{font-family:var(--f-mono);font-weight:700;font-size:1.35rem;letter-spacing:.04em}
+.code-bar details{font-size:.9rem}
+.code-bar summary{cursor:pointer;color:var(--muted)}
+.code-bar form{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.code-bar input{font:inherit;width:6.5em;padding:6px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--ink)}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin-top:24px}
+nav.tabs button{min-width:44px}
+nav.tabs button[aria-selected=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+section.card{margin-top:14px;padding:20px;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.kicker{font-family:var(--f-mono);font-size:.85rem;color:var(--muted);margin:0 0 2px}
+.brief{margin:8px 0 0;max-width:72ch}
+.steps{margin:10px 0 0;padding-left:1.2em;color:var(--muted);font-size:.95rem;max-width:72ch}
+.steps b{color:var(--ink)}
+.bench{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;margin-top:16px;align-items:start}
+@media (max-width:760px){.bench{grid-template-columns:1fr}}
+svg{display:block;width:100%;height:auto}
+.panel{display:grid;gap:14px;align-content:start}
+.ctl-label{font-size:.92rem;margin:0 0 6px;font-weight:600}
+button,.btn{font:inherit;font-weight:600;font-size:.95rem;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:7px 12px;cursor:pointer;min-height:40px}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button.primary,.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);text-decoration:none;display:inline-flex;align-items:center}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.lcds{display:flex;flex-wrap:wrap;gap:10px}
+.lcd{flex:1 1 150px;border:2px solid var(--ink);border-radius:8px;padding:8px 10px;background:var(--surface)}
+.lcd .name{display:block;font-size:.8rem;color:var(--muted);font-weight:600}
+.lcd .scr{display:flex;align-items:baseline;justify-content:flex-end;gap:6px;background:var(--lcd);color:var(--lcd-ink);border-radius:4px;padding:6px 10px;font-family:var(--f-mono);font-weight:700}
+.lcd output{font-size:1.6rem;letter-spacing:.03em}
+.lcd .u{font-size:1rem}
+.msg{padding:10px 12px;border-radius:6px;font-size:.95rem;margin:0}
+.msg.ok{background:var(--ok-soft);color:var(--ok)}
+.msg.warn{background:var(--warn-soft);color:var(--warn)}
+.msg.danger{background:var(--danger-soft);color:var(--danger)}
+.msg b{color:inherit}
+.retenir{margin-top:18px;padding:12px 14px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 6px 6px 0;font-size:.95rem}
+.retenir b{display:block;margin-bottom:2px}
+.plaque{font-family:var(--f-mono);border:2px solid var(--ink);border-radius:6px;padding:10px 12px;font-size:.95rem;line-height:1.5;background:var(--surface)}
+.plaque b{font-size:1.05rem}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:4px 6px;text-align:center}
+th{background:var(--accent-soft);font-weight:700}
+td input{width:100%;max-width:100px;font:inherit;text-align:center;padding:5px 4px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink)}
+td.k{font-weight:700;font-family:var(--f-mono)}
+.data{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:24px;margin-top:18px;align-items:start}
+@media (max-width:760px){.data{grid-template-columns:1fr}}
+.result{margin-top:10px}
+.result b{font-family:var(--f-mono);font-size:1.15rem}
+.hint{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.apps{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+.app{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;background:var(--surface);font-size:.95rem}
+.app input{width:20px;height:20px;accent-color:var(--accent)}
+.app .p{display:block;font-family:var(--f-mono);font-weight:700}
+.app.off{opacity:.55}
+.gauge{position:relative;height:34px;border-radius:6px;overflow:hidden;display:flex;border:1px solid var(--line)}
+.gauge span{display:block;height:100%}
+.gauge .needle{position:absolute;top:-2px;bottom:-2px;width:4px;margin-left:-2px;background:var(--ink);border-radius:2px;transition:left .3s}
+.gauge-scale{display:flex;justify-content:space-between;font-size:.78rem;color:var(--muted);font-family:var(--f-mono);margin-top:2px}
+.thermo{height:16px;border-radius:8px;background:var(--line);overflow:hidden}
+.thermo span{display:block;height:100%;width:0;background:var(--ok);transition:width .4s,background .4s}
+.w{stroke:var(--ink);stroke-width:2;fill:none}
+.mt{fill:var(--surface);stroke:var(--ink);stroke-width:2}
+.mtl{font:700 16px var(--f-body);fill:var(--ink);text-anchor:middle}
+.lbl{font:600 14px var(--f-body);fill:var(--ink)}
+.lbl-m{font:13px var(--f-body);fill:var(--muted)}
+.dot{fill:var(--ink)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+.nextnav{display:flex;justify-content:space-between;gap:8px;margin-top:18px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="fiche"><span>Physique-Chimie</span><span>Lycée Nadar</span><span>Mr Gheraibia&nbsp;&nbsp;2026/2027</span></div>
+
+  <header class="top">
+    <p class="theme-label">Seconde MTNE · Électricité : loi d'Ohm, puissance et énergie</p>
+    <h1>Stagiaire chez l'électricien</h1>
+    <p class="lead"><b>Durée : 2 h.</b> Tu commences ton stage dans une entreprise d'électricité. Ton tuteur t'envoie sur 8 interventions. À chaque fois, tu mesures avec le simulateur, puis tu calcules avec les formules du cours. Tu réponds aux questions dans ton compte rendu Word.</p>
+    <div class="code-bar">
+      <div>Ton code stagiaire : <span class="code" id="code">E-??</span></div>
+      <a class="btn primary" href="compte-rendu-TP-loi-ohm.docx" download>Télécharger le compte rendu (Word)</a>
+      <details>
+        <summary>J'ai déjà un code (autre appareil)</summary>
+        <form id="codeForm">
+          <label for="codeIn" class="sr">Code</label>
+          <input id="codeIn" placeholder="E-37" maxlength="5">
+          <button type="submit">Utiliser ce code</button>
+        </form>
+      </details>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Missions" id="tabs"></nav>
+
+  <!-- ===================== MISSION 1 ===================== -->
+  <section class="card mission" id="m1" role="tabpanel" aria-labelledby="h1m">
+    <p class="kicker">Mission 1 · questions 1 à 4 · ≈ 10 min</p>
+    <h2 id="h1m">Premier jour : brancher les appareils de mesure</h2>
+    <p class="brief">Ton tuteur te donne une pile de 12 V, un voyant (petite lampe) et deux multimètres. « Mesure la tension aux bornes du voyant et l'intensité qui le traverse. Attention au branchement ! »</p>
+    <ol class="steps">
+      <li><b>Essaie</b> chaque position du voltmètre et de l'ampèremètre. Observe le voyant et les afficheurs.</li>
+      <li><b>Trouve</b> le bon branchement : le voyant doit être allumé et les deux mesures doivent avoir du sens.</li>
+      <li>Si le fusible de l'ampèremètre fond, <b>remplace-le</b> avec le bouton.</li>
+    </ol>
+    <div class="bench">
+      <svg id="svg1" viewBox="0 0 470 260" role="img" aria-label="Schéma du circuit : pile, voyant, voltmètre et ampèremètre"></svg>
+      <div class="panel">
+        <div><p class="ctl-label">Voltmètre (V) :</p>
+          <div class="seg" data-grp="v1"><button type="button" data-v="ser">en série, dans le fil</button><button type="button" data-v="der">en dérivation, aux bornes du voyant</button></div></div>
+        <div><p class="ctl-label">Ampèremètre (A) :</p>
+          <div class="seg" data-grp="a1"><button type="button" data-v="ser">en série, dans le fil</button><button type="button" data-v="der">en dérivation, aux bornes du voyant</button></div></div>
+        <div class="lcds">
+          <div class="lcd"><span class="name">Voltmètre</span><div class="scr"><output id="m1V">0,00</output><span class="u">V</span></div></div>
+          <div class="lcd"><span class="name">Ampèremètre</span><div class="scr"><output id="m1A">0,000</output><span class="u">A</span></div></div>
+        </div>
+        <p class="msg" id="m1msg"></p>
+        <button type="button" id="m1fuse" hidden>Remplacer le fusible de l'ampèremètre</button>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>Le voltmètre se branche en dérivation, aux bornes du composant. L'ampèremètre se branche en série : le courant doit le traverser. Un ampèremètre branché en dérivation provoque un court-circuit.</div>
+  </section>
+
+  <!-- ===================== MISSION 2 ===================== -->
+  <section class="card mission" id="m2" role="tabpanel" aria-labelledby="h2m" hidden>
+    <p class="kicker">Mission 2 · questions 5 à 8 · ≈ 20 min</p>
+    <h2 id="h2m">La résistance mystère</h2>
+    <p class="brief">Dans la caisse à outils, une résistance a perdu son marquage. Ton tuteur veut connaître sa valeur. « Fais varier la tension, mesure l'intensité, et trace la caractéristique U = f(I). »</p>
+    <ol class="steps">
+      <li><b>Règle</b> la tension U du générateur : 0, 2, 4, 6, 8, 10 puis 12 V.</li>
+      <li><b>Relève</b> l'intensité I affichée en mA, puis <b>convertis</b>-la en A dans le tableau.</li>
+      <li>Le traceur dessine U en fonction de I (en A) et donne le coefficient directeur de la droite.</li>
+    </ol>
+    <div class="bench">
+      <svg id="svg2" viewBox="0 0 470 260" role="img" aria-label="Schéma : générateur réglable, ampèremètre en série, résistance inconnue et voltmètre en dérivation"></svg>
+      <div class="panel">
+        <div><p class="ctl-label">Tension du générateur : <output id="m2Uout">0</output> V</p>
+          <div class="seg"><button type="button" id="m2minus" aria-label="Diminuer la tension de 1 V">−1 V</button><input type="range" id="m2U" min="0" max="12" step="1" value="0" style="flex:1;min-width:120px;accent-color:var(--accent)" aria-label="Tension du générateur en volts"><button type="button" id="m2plus" aria-label="Augmenter la tension de 1 V">+1 V</button></div></div>
+        <div class="lcds">
+          <div class="lcd"><span class="name">Voltmètre</span><div class="scr"><output id="m2V">0,00</output><span class="u">V</span></div></div>
+          <div class="lcd"><span class="name">Ampèremètre (calibre mA)</span><div class="scr"><output id="m2A">0,0</output><span class="u">mA</span></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="data">
+      <div>
+        <table>
+          <thead><tr><th scope="col">U (V)</th><th scope="col">I (mA)</th><th scope="col">I (A)</th></tr></thead>
+          <tbody id="m2body"></tbody>
+        </table>
+        <button type="button" id="m2clear" style="margin-top:10px">Effacer mes mesures</button>
+      </div>
+      <div>
+        <svg id="plot2" viewBox="0 0 360 330" role="img" aria-label="Graphique U en fonction de I"></svg>
+        <div class="result" id="m2res">Entre au moins 3 valeurs de I (en A) pour voir la droite.</div>
+        <p class="hint">Le traceur utilise la colonne I (A). Si le coefficient directeur te paraît bizarre (0,1 ou 0,2 par exemple), vérifie ta conversion des mA en A : on divise par 1 000.</p>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>Pour un dipôle ohmique, U et I sont proportionnels : la caractéristique est une droite qui passe par l'origine. Son coefficient directeur est la résistance R, en ohms (Ω) : U = R × I.</div>
+  </section>
+
+  <!-- ===================== MISSION 3 ===================== -->
+  <section class="card mission" id="m3" role="tabpanel" aria-labelledby="h3m" hidden>
+    <p class="kicker">Mission 3 · questions 9 à 12 · ≈ 15 min</p>
+    <h2 id="h3m">Trois chauffe-eau en panne</h2>
+    <p class="brief">Trois clients appellent : « Mon chauffe-eau ne chauffe plus ! » Ils ont tous le même modèle. Tu dois contrôler la résistance chauffante de chaque chauffe-eau avec l'ohmmètre, puis faire ton diagnostic.</p>
+    <ol class="steps">
+      <li><b>Lis</b> la plaque signalétique et <b>calcule</b> la résistance attendue (questions 9 et 10).</li>
+      <li><b>Choisis</b> un client, puis <b>mesure</b> la résistance. Que faut-il faire avant de mesurer ?</li>
+      <li><b>Compare</b> chaque mesure à la valeur attendue.</li>
+    </ol>
+    <div class="bench">
+      <svg id="svg3" viewBox="0 0 470 280" role="img" aria-label="Chauffe-eau ouvert, résistance chauffante reliée à l'ohmmètre"></svg>
+      <div class="panel">
+        <div class="plaque" id="m3plaque"></div>
+        <div><p class="ctl-label">Client :</p>
+          <div class="seg" data-grp="c3"><button type="button" data-v="0">Client A</button><button type="button" data-v="1">Client B</button><button type="button" data-v="2">Client C</button></div></div>
+        <div><p class="ctl-label">Disjoncteur du chauffe-eau :</p>
+          <div class="seg" data-grp="d3"><button type="button" data-v="on">fermé (sous tension)</button><button type="button" data-v="off">ouvert (hors tension)</button></div></div>
+        <div class="lcds"><div class="lcd"><span class="name">Ohmmètre</span><div class="scr"><output id="m3R">----</output><span class="u">Ω</span></div></div></div>
+        <p class="msg" id="m3msg"></p>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>On ne mesure jamais une résistance sous tension : on coupe d'abord le courant. « OL » (over limit) signifie que la résistance est trop grande pour l'appareil : le circuit est coupé. Une résistance presque nulle indique un court-circuit.</div>
+  </section>
+
+  <!-- ===================== MISSION 4 ===================== -->
+  <section class="card mission" id="m4" role="tabpanel" aria-labelledby="h4m" hidden>
+    <p class="kicker">Mission 4 · questions 13 à 16 · ≈ 15 min</p>
+    <h2 id="h4m">Le voyant LED qui grille</h2>
+    <p class="brief">Un client installe un voyant LED rouge sur son tableau de domotique. À chaque fois, la LED grille ! Ton tuteur t'explique : « Une LED ne se branche jamais seule. Il faut une résistance de protection pour limiter l'intensité. »</p>
+    <ol class="steps">
+      <li>La LED garde toujours <b>2 V</b> à ses bornes. Elle fonctionne bien avec <b>I = 20 mA</b> et grille à partir de <b>30 mA</b>.</li>
+      <li>La résistance reçoit le reste de la tension : <b>U<sub>R</sub> = U<sub>alim</sub> − 2 V</b>.</li>
+      <li><b>Calcule</b> la résistance qu'il faut, puis <b>choisis</b> la valeur du commerce la plus proche et <b>teste</b>-la.</li>
+    </ol>
+    <div class="bench">
+      <svg id="svg4" viewBox="0 0 470 260" role="img" aria-label="Schéma : alimentation, ampèremètre, résistance de protection et LED"></svg>
+      <div class="panel">
+        <div><p class="ctl-label">Résistance de protection :</p>
+          <div class="seg" data-grp="r4"></div></div>
+        <div class="lcds">
+          <div class="lcd"><span class="name">Ampèremètre</span><div class="scr"><output id="m4A">0,0</output><span class="u">mA</span></div></div>
+          <div class="lcd"><span class="name">Tension aux bornes de R</span><div class="scr"><output id="m4UR">0,00</output><span class="u">V</span></div></div>
+        </div>
+        <p class="msg" id="m4msg"></p>
+        <button type="button" id="m4new" hidden>Remplacer la LED grillée</button>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>À tension constante, plus la résistance est grande, plus l'intensité est petite (I = U / R). La résistance de protection limite l'intensité qui traverse la LED.</div>
+  </section>
+
+  <!-- ===================== MISSION 5 ===================== -->
+  <section class="card mission" id="m5" role="tabpanel" aria-labelledby="h5m" hidden>
+    <p class="kicker">Mission 5 · questions 17 à 19 · ≈ 15 min</p>
+    <h2 id="h5m">La multiprise de la cuisine</h2>
+    <p class="brief">Une cliente se plaint : « Le disjoncteur saute dès que je fais chauffer de l'eau ! » Toute sa cuisine est branchée sur une seule ligne protégée par un disjoncteur de <b>16 A</b>, sous <b>230 V</b>. Tu mesures l'intensité totale avec une pince ampèremétrique.</p>
+    <ol class="steps">
+      <li><b>Branche</b> les appareils un par un en cochant les cases. Lis l'intensité totale sur la pince.</li>
+      <li><b>Calcule</b> d'abord, puis <b>vérifie</b> avec le simulateur (questions 17 à 19).</li>
+    </ol>
+    <div class="bench">
+      <div class="panel">
+        <div class="apps" id="m5apps"></div>
+      </div>
+      <div class="panel">
+        <div class="lcds"><div class="lcd"><span class="name">Pince ampèremétrique (intensité totale)</span><div class="scr"><output id="m5I">0,0</output><span class="u">A</span></div></div></div>
+        <div class="plaque">Disjoncteur de la ligne : <b>16 A</b> · <span id="m5state">fermé</span></div>
+        <p class="msg" id="m5msg"></p>
+        <button type="button" id="m5reset" hidden>Réarmer le disjoncteur</button>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>L'intensité appelée par un appareil vaut I = P / U. Les intensités des appareils branchés sur une même ligne s'additionnent. Sous 230 V, un disjoncteur de 16 A supporte au maximum P = U × I = 230 × 16 = 3 680 W.</div>
+  </section>
+
+  <!-- ===================== MISSION 6 ===================== -->
+  <section class="card mission" id="m6" role="tabpanel" aria-labelledby="h6m" hidden>
+    <p class="kicker">Mission 6 · questions 20 à 23 · ≈ 20 min</p>
+    <h2 id="h6m">L'enrouleur qui chauffe</h2>
+    <p class="brief">Sur un chantier, un ouvrier branche un radiateur de 2 000 W au bout d'un enrouleur de 50 m. Au bout d'un moment, l'enrouleur devient brûlant. Ton tuteur : « Les fils de cuivre ont une petite résistance. Avec un fort courant, ça compte ! »</p>
+    <ol class="steps">
+      <li><b>Règle</b> : 50 m, câble 1,5 mm², enroulé. <b>Mesure</b> d'abord la résistance du câble <b>hors tension</b>.</li>
+      <li><b>Mets</b> sous tension et <b>lis</b> l'intensité sur la pince. Observe la température de l'enrouleur.</li>
+      <li><b>Compare</b> ensuite : enroulé ou déroulé, 1,5 mm² ou 2,5 mm².</li>
+    </ol>
+    <div class="bench">
+      <svg id="svg6" viewBox="0 0 470 220" role="img" aria-label="Prise murale, enrouleur électrique et radiateur"></svg>
+      <div class="panel">
+        <div><p class="ctl-label">Longueur du câble :</p><div class="seg" data-grp="l6"><button type="button" data-v="10">10 m</button><button type="button" data-v="25">25 m</button><button type="button" data-v="50">50 m</button></div></div>
+        <div><p class="ctl-label">Section des fils :</p><div class="seg" data-grp="s6"><button type="button" data-v="1.5">1,5 mm²</button><button type="button" data-v="2.5">2,5 mm²</button></div></div>
+        <div><p class="ctl-label">Enrouleur :</p><div class="seg" data-grp="e6"><button type="button" data-v="in">enroulé</button><button type="button" data-v="out">déroulé</button></div></div>
+        <div><p class="ctl-label">Alimentation :</p><div class="seg" data-grp="p6"><button type="button" data-v="off">hors tension</button><button type="button" data-v="on">sous tension</button></div></div>
+        <div class="lcds">
+          <div class="lcd"><span class="name">Ohmmètre (câble)</span><div class="scr"><output id="m6R">----</output><span class="u">Ω</span></div></div>
+          <div class="lcd"><span class="name">Pince ampèremétrique</span><div class="scr"><output id="m6I">0,00</output><span class="u">A</span></div></div>
+        </div>
+        <div><p class="ctl-label">Température de l'enrouleur : <output id="m6T">20</output> °C</p><div class="thermo"><span id="m6bar"></span></div></div>
+        <p class="msg" id="m6msg"></p>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>Un câble a une résistance : une partie de la tension est perdue dans le câble (U = R × I) et transformée en chaleur (effet Joule). Plus le câble est long et fin, plus sa résistance est grande. Enroulé, il ne peut pas évacuer la chaleur : il faut toujours dérouler complètement un enrouleur.</div>
+  </section>
+
+  <!-- ===================== MISSION 7 ===================== -->
+  <section class="card mission" id="m7" role="tabpanel" aria-labelledby="h7m" hidden>
+    <p class="kicker">Mission 7 · questions 24 à 27 · ≈ 15 min</p>
+    <h2 id="h7m">Sécurité : pourquoi du 12 V dans la salle de bain ?</h2>
+    <p class="brief">Tu poses l'éclairage d'une baignoire avec ton tuteur. Il installe des spots en <b>12 V</b> et pas en 230 V. « La norme l'impose. Calcule et tu comprendras pourquoi. » Le corps humain se comporte comme une résistance, qui dépend de l'état de la peau.</p>
+    <ol class="steps">
+      <li><b>Choisis</b> une tension de contact et l'état du corps. Le simulateur calcule l'intensité qui traverserait le corps.</li>
+      <li><b>Vérifie</b> tes calculs (questions 24 à 26), puis <b>active</b> le différentiel 30 mA.</li>
+    </ol>
+    <div class="bench">
+      <div class="panel">
+        <div><p class="ctl-label">Tension touchée :</p><div class="seg" data-grp="u7"><button type="button" data-v="12">12 V</button><button type="button" data-v="24">24 V</button><button type="button" data-v="50">50 V</button><button type="button" data-v="230">230 V</button></div></div>
+        <div><p class="ctl-label">État du corps :</p><div class="seg" data-grp="r7"><button type="button" data-v="5000">peau sèche (5 000 Ω)</button><button type="button" data-v="2000">mains mouillées (2 000 Ω)</button><button type="button" data-v="1000">dans le bain (1 000 Ω)</button></div></div>
+        <div><p class="ctl-label">Interrupteur différentiel 30 mA :</p><div class="seg" data-grp="d7"><button type="button" data-v="no">absent</button><button type="button" data-v="yes">installé</button></div></div>
+      </div>
+      <div class="panel">
+        <div class="lcds"><div class="lcd"><span class="name">Intensité dans le corps</span><div class="scr"><output id="m7I">0</output><span class="u">mA</span></div></div></div>
+        <div>
+          <div class="gauge" aria-hidden="true">
+            <span style="width:20%;background:var(--ok-soft)"></span><span style="width:30%;background:var(--warn-soft)"></span><span style="width:16%;background:var(--hot-soft)"></span><span style="width:34%;background:var(--danger-soft)"></span>
+            <i class="needle" id="m7needle"></i>
+          </div>
+          <div class="gauge-scale"><span>0,1</span><span>0,5</span><span>10</span><span>30</span><span>1 000 mA</span></div>
+        </div>
+        <p class="msg" id="m7msg"></p>
+        <p class="msg" id="m7diff" hidden></p>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>Ce qui est dangereux, c'est l'intensité qui traverse le corps : au-delà de 30 mA, il y a danger de mort. Avec la loi d'Ohm, I = U / R : plus la peau est mouillée, plus R est petite et plus I est grande. C'est pour ça qu'on utilise une très basse tension (12 V) dans les lieux mouillés.</div>
+  </section>
+
+  <!-- ===================== MISSION 8 ===================== -->
+  <section class="card mission" id="m8" role="tabpanel" aria-labelledby="h8m" hidden>
+    <p class="kicker">Mission 8 · questions 28 à 30 · ≈ 10 min</p>
+    <h2 id="h8m">La facture du client</h2>
+    <p class="brief">Un client trouve sa facture d'électricité trop chère. Tu branches une <b>prise wattmètre</b> entre la prise murale et chaque appareil du salon pour mesurer sa puissance, en marche puis en veille. Le prix du kWh est de <b>0,25 €</b>.</p>
+    <ol class="steps">
+      <li><b>Choisis</b> un appareil et son mode. <b>Relève</b> la puissance affichée.</li>
+      <li>La console du client reste en veille <b>20 h par jour</b>, toute l'année. <b>Calcule</b> l'énergie gaspillée et son coût.</li>
+    </ol>
+    <div class="bench">
+      <div class="panel">
+        <div><p class="ctl-label">Appareil :</p><div class="seg" data-grp="a8"><button type="button" data-v="console">console de jeux</button><button type="button" data-v="tv">télévision</button><button type="button" data-v="box">box internet</button></div></div>
+        <div><p class="ctl-label">Mode :</p><div class="seg" data-grp="m8"><button type="button" data-v="on">en marche</button><button type="button" data-v="veille">en veille</button></div></div>
+      </div>
+      <div class="panel">
+        <div class="lcds"><div class="lcd"><span class="name">Prise wattmètre</span><div class="scr"><output id="m8P">0</output><span class="u">W</span></div></div></div>
+        <p class="msg ok" id="m8msg"></p>
+      </div>
+    </div>
+    <div class="retenir"><b>À retenir</b>L'énergie consommée vaut E = P × t. Avec P en kW et t en heures, E est en kWh. Coût = énergie en kWh × prix du kWh. Un appareil en veille consomme peu, mais pendant très longtemps !</div>
+    <p class="msg ok" style="margin-top:16px"><b>Fin du stage !</b> Vérifie que toutes les questions sont remplies, puis dépose ton compte rendu dans le dossier partagé de la classe (NOM_Prenom_TP_loi_ohm.docx).</p>
+  </section>
+
+  <div class="nextnav"><button type="button" id="prev">← Mission précédente</button><button type="button" class="primary" id="next">Mission suivante →</button></div>
+
+  <footer>Ce que tu écris ici reste dans ton navigateur : rien n'est envoyé à ton professeur. Ton compte rendu Word, lui, est à déposer dans le dossier partagé de la classe (NOM_Prenom_TP_loi_ohm.docx). · <a href="https://yanissegheraibia-0403.github.io/" style="color:inherit">Tous les TP</a></footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  // Valeurs qui dépendent du code stagiaire E-n (n de 10 à 99). Mêmes tables que le corrigé.
+  var R2 = [56, 82, 120, 150, 220, 330];          // mission 2 : résistance mystère [n % 6]
+  var P3 = [1200, 1500, 2000, 2400];              // mission 3 : puissance du chauffe-eau [n % 4]
+  var PERM3 = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]; // mission 3 : état des clients A, B, C [n % 6] ; 0 = bonne, 1 = coupée, 2 = court-circuit
+  var U4 = [24, 5, 9, 12];                        // mission 4 : alimentation [chiffre des dizaines % 4]
+  var PV8 = [8, 10, 12, 15];                      // mission 8 : console en veille [n % 4]
+
+  function store(k, v){ try{ if(v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); }catch(e){ return null; } }
+  function fr(x, d){ return x.toFixed(d).replace(".", ",").replace(/\B(?=(\d{3})+(?!\d))/g, " "); }
+  function $(id){ return document.getElementById(id); }
+  function msg(id, cls, html){ var m = $(id); m.className = "msg " + cls; m.innerHTML = html; m.hidden = !html; }
+
+  // ---------- code stagiaire ----------
+  var n = parseInt(store("ohm-code") || "", 10);
+  if(!(n >= 10 && n <= 99)){ n = 10 + Math.floor(Math.random()*90); store("ohm-code", String(n)); }
+  var V = {};
+  function applyCode(){
+    V = {R2: R2[n % 6], P3: P3[n % 4], perm: PERM3[n % 6], U4: U4[Math.floor(n/10) % 4], PV8: PV8[n % 4]};
+    $("code").textContent = "E-" + n;
+  }
+  applyCode();
+  $("codeForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var m = /(\d{2})/.exec($("codeIn").value); if(!m) return;
+    var v = parseInt(m[1], 10); if(v < 10) return;
+    n = v; store("ohm-code", String(n)); applyCode(); loadM2(); renderAll();
+  });
+
+  // ---------- boutons segmentés ----------
+  var state = {v1:"ser", a1:"ser", c3:"0", d3:"on", r4:"2200", l6:"50", s6:"1.5", e6:"in", p6:"off", u7:"230", r7:"2000", d7:"no", a8:"console", m8:"on"};
+  var hooks = {};
+  function bindSeg(grp){
+    var box = document.querySelector('[data-grp="' + grp + '"]');
+    function sync(){ Array.prototype.forEach.call(box.querySelectorAll("button"), function(b){ b.setAttribute("aria-pressed", b.dataset.v === state[grp] ? "true" : "false"); }); }
+    box.addEventListener("click", function(e){
+      var b = e.target.closest("button"); if(!b) return;
+      state[grp] = b.dataset.v; sync(); if(hooks[grp]) hooks[grp]();
+    });
+    sync();
+    return sync;
+  }
+
+  // ---------- éléments de schéma ----------
+  function wire(x1,y1,x2,y2){ return '<line x1="'+x1+'" y1="'+y1+'" x2="'+x2+'" y2="'+y2+'" class="w"/>'; }
+  function poly(pts){ return '<polyline points="'+pts+'" class="w"/>'; }
+  function meter(x,y,L,extra){ return '<circle cx="'+x+'" cy="'+y+'" r="17" class="mt"/><text x="'+x+'" y="'+(y+6)+'" class="mtl">'+L+'</text>' + (extra||""); }
+  function dot(x,y){ return '<circle cx="'+x+'" cy="'+y+'" r="4" class="dot"/>'; }
+  function battery(x,y,label){ // vertical, + en haut ; fils à y-6 et y+6
+    return '<line x1="'+(x-20)+'" y1="'+(y-6)+'" x2="'+(x+20)+'" y2="'+(y-6)+'" class="w"/>' +
+           '<line x1="'+(x-10)+'" y1="'+(y+6)+'" x2="'+(x+10)+'" y2="'+(y+6)+'" class="w" style="stroke-width:6"/>' +
+           '<text x="'+(x-28)+'" y="'+(y-10)+'" class="lbl-m" text-anchor="end">+</text>' +
+           '<text x="'+(x-28)+'" y="'+(y+14)+'" class="lbl" text-anchor="end">'+label+'</text>';
+  }
+  function lamp(x,y,on){
+    var g = on ? '<circle cx="'+x+'" cy="'+y+'" r="34" fill="var(--lamp)" opacity=".45"/>' : "";
+    return g + '<circle cx="'+x+'" cy="'+y+'" r="17" class="mt" style="fill:'+(on?"var(--lamp)":"var(--surface)")+'"/>' +
+      '<line x1="'+(x-12)+'" y1="'+(y-12)+'" x2="'+(x+12)+'" y2="'+(y+12)+'" class="w"/><line x1="'+(x-12)+'" y1="'+(y+12)+'" x2="'+(x+12)+'" y2="'+(y-12)+'" class="w"/>';
+  }
+  function resV(x,y,label){ return '<rect x="'+(x-10)+'" y="'+(y-28)+'" width="20" height="56" class="mt"/><text x="'+(x+18)+'" y="'+(y+5)+'" class="lbl">'+label+'</text>'; }
+  function resH(x,y,label){ return '<rect x="'+(x-28)+'" y="'+(y-10)+'" width="56" height="20" class="mt"/><text x="'+x+'" y="'+(y-18)+'" class="lbl" text-anchor="middle">'+label+'</text>'; }
+
+  // ================= MISSION 1 =================
+  var fuseOK = true;
+  function render1(){
+    var v = state.v1, a = state.a1, I = 0, U = 0, on = false, blown = false;
+    if(v === "der" && a === "der" && fuseOK){ fuseOK = false; blown = true; }
+    if(v === "ser"){ U = 12; I = 0; }
+    else if(a === "ser"){ if(fuseOK){ I = 0.25; U = 12; on = true; } else { I = 0; U = 0; } }
+    else { U = 12; I = 0; on = true; } // ampèremètre en dérivation, fusible déjà fondu : il ne conduit plus
+    var ser = [], par = [];
+    (v === "ser" ? ser : par).push("V"); (a === "ser" ? ser : par).push("A");
+    var L = 90, R = 300, T = 50, B = 220, Y = 135, s = "";
+    s += wire(L,T,R,T) + wire(L,T,L,Y-6) + wire(L,Y+6,L,B) + wire(L,B,R,B);
+    s += wire(R,T,R,Y-17) + wire(R,Y+17,R,B);
+    s += battery(L,Y,"12 V");
+    s += lamp(R,Y,on) + '<text x="'+(R-26)+'" y="'+(Y+5)+'" class="lbl" text-anchor="end">voyant</text>';
+    var xs = ser.length === 1 ? [195] : [160, 235];
+    ser.forEach(function(m,i){ s += meter(xs[i],T,m); });
+    var px = [370, 430];
+    par.forEach(function(m,i){ s += poly(R+","+80+" "+px[i]+",80 "+px[i]+",190 "+R+",190") + meter(px[i],Y,m); });
+    if(par.length){ s += dot(R,80) + dot(R,190); }
+    if(!fuseOK){ var ax = a === "ser" ? xs[ser.indexOf("A")] : px[par.indexOf("A")], ay = a === "ser" ? T : Y;
+      s += '<text x="'+ax+'" y="'+(ay+36)+'" class="lbl" text-anchor="middle" style="fill:var(--danger)">fusible HS</text>'; }
+    $("svg1").innerHTML = s;
+    $("m1V").textContent = fr(U, 2);
+    $("m1A").textContent = fuseOK ? fr(I, 3) : "FUSE";
+    $("m1fuse").hidden = fuseOK;
+    if(blown) msg("m1msg", "danger", "<b>Court-circuit !</b> L'ampèremètre branché en dérivation laisse passer un courant énorme : son fusible a fondu.");
+    else if(!fuseOK) msg("m1msg", "danger", "Le fusible de l'ampèremètre est hors service : il n'affiche plus rien. Remplace-le avant de continuer.");
+    else if(v === "ser") msg("m1msg", "warn", "Le voyant est éteint : un voltmètre placé dans le fil bloque presque tout le courant.");
+    else if(a === "ser") msg("m1msg", "ok", "Le voyant est allumé et les deux mesures sont correctes. Relève-les pour la question 2.");
+    else msg("m1msg", "", "");
+  }
+  hooks.v1 = render1; hooks.a1 = render1;
+  $("m1fuse").addEventListener("click", function(){ fuseOK = true; render1(); });
+
+  // ================= MISSION 2 =================
+  var U2s = [0,2,4,6,8,10,12], inp2 = {};
+  function render2(){
+    var U = +$("m2U").value, I = U / V.R2;
+    $("m2Uout").textContent = U; $("m2V").textContent = fr(U, 2); $("m2A").textContent = fr(I*1000, 1);
+    var L = 90, R = 300, T = 50, B = 220, Y = 135, s = "";
+    s += wire(L,T,R,T) + wire(L,T,L,Y-6) + wire(L,Y+6,L,B) + wire(L,B,R,B) + wire(R,T,R,Y-28) + wire(R,Y+28,R,B);
+    s += battery(L,Y,"U") + meter(195,T,"A") + resV(R,Y,"");
+    s += '<text x="'+(R-20)+'" y="'+(Y+5)+'" class="lbl" text-anchor="end">R = ?</text>';
+    s += poly(R+",80 380,80 380,190 "+R+",190") + meter(380,Y,"V") + dot(R,80) + dot(R,190);
+    $("svg2").innerHTML = s;
+  }
+  (function(){
+    var tb = $("m2body");
+    U2s.forEach(function(u){
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td class="k">'+u+'</td><td><input inputmode="decimal" aria-label="I en mA pour U = '+u+' V" data-k="ma'+u+'"></td><td><input inputmode="decimal" aria-label="I en A pour U = '+u+' V" data-k="a'+u+'"></td>';
+      tb.appendChild(tr);
+    });
+    Array.prototype.forEach.call(tb.querySelectorAll("input"), function(i){ inp2[i.dataset.k] = i; i.addEventListener("input", function(){ saveM2(); plot2(); }); });
+  })();
+  function key2(){ return "ohm-m2-" + n; }
+  function saveM2(){ var o = {}; for(var k in inp2) o[k] = inp2[k].value; store(key2(), JSON.stringify(o)); }
+  function loadM2(){ var o = {}; try{ o = JSON.parse(store(key2()) || "{}") || {}; }catch(e){} for(var k in inp2) inp2[k].value = o[k] || ""; }
+  $("m2clear").addEventListener("click", function(){ for(var k in inp2) inp2[k].value = ""; saveM2(); plot2(); });
+  $("m2U").addEventListener("input", render2);
+  $("m2minus").addEventListener("click", function(){ $("m2U").value = Math.max(0, +$("m2U").value - 1); render2(); });
+  $("m2plus").addEventListener("click", function(){ $("m2U").value = Math.min(12, +$("m2U").value + 1); render2(); });
+  function num(s){ var v = parseFloat(String(s).replace(",", ".").replace(/\s/g, "")); return isFinite(v) ? v : null; }
+  function niceMax(v){ var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p; }
+  function plot2(){
+    var svg = $("plot2"), X0 = 52, Y0 = 290, W = 286, H = 270, pts = [], s = "";
+    U2s.forEach(function(u){ var i = num(inp2["a"+u].value); if(i !== null && i >= 0) pts.push([i, u]); });
+    var xmax = 0; pts.forEach(function(p){ xmax = Math.max(xmax, p[0]); });
+    xmax = xmax > 0 ? niceMax(xmax * 1.05) : 0.25;
+    function X(v){ return X0 + v / xmax * W; } function Y(v){ return Y0 - v / 14 * H; }
+    for(var g = 0; g <= 10; g++){
+      var xv = xmax * g / 10;
+      s += '<line x1="'+X(xv)+'" y1="'+Y(0)+'" x2="'+X(xv)+'" y2="'+Y(14)+'" stroke="var(--line)"/>';
+      if(g % 2 === 0) s += '<text x="'+X(xv)+'" y="'+(Y0+16)+'" text-anchor="middle" class="lbl-m" style="font-size:11px">'+String(+xv.toPrecision(3)).replace(".", ",")+'</text>';
+    }
+    for(var u = 0; u <= 14; u += 2){
+      s += '<line x1="'+X(0)+'" y1="'+Y(u)+'" x2="'+X(xmax)+'" y2="'+Y(u)+'" stroke="var(--line)"/>';
+      s += '<text x="'+(X0-6)+'" y="'+(Y(u)+4)+'" text-anchor="end" class="lbl-m" style="font-size:11px">'+u+'</text>';
+    }
+    s += '<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(xmax)+'" y2="'+Y(0)+'" stroke="var(--ink)"/><line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(0)+'" y2="'+Y(14)+'" stroke="var(--ink)"/>';
+    s += '<text x="'+X(xmax)+'" y="'+(Y0+32)+'" text-anchor="end" class="lbl" style="font-size:12px">I (A)</text><text x="'+X0+'" y="12" class="lbl" style="font-size:12px">U (V)</text>';
+    var sxy = 0, sxx = 0; pts.forEach(function(p){ sxy += p[0]*p[1]; sxx += p[0]*p[0]; });
+    var res = $("m2res");
+    if(pts.length >= 3 && sxx > 0){
+      var k = sxy / sxx, xe = Math.min(xmax, 14 / k);
+      s += '<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(xe)+'" y2="'+Y(k*xe)+'" stroke="var(--accent)" stroke-width="2"/>';
+      res.innerHTML = "Droite passant par l'origine : U = k × I avec <b>k ≈ " + fr(k, k < 10 ? 2 : 0) + "</b> (en V/A, c'est-à-dire en Ω)";
+    } else res.textContent = "Entre au moins 3 valeurs de I (en A) pour voir la droite.";
+    pts.forEach(function(p){ s += '<circle cx="'+X(p[0])+'" cy="'+Y(p[1])+'" r="4.5" fill="var(--danger)" stroke="var(--surface)" stroke-width="1.5"/>'; });
+    svg.innerHTML = s;
+  }
+
+  // ================= MISSION 3 =================
+  function render3(){
+    var Rth = 230*230 / V.P3, etat = V.perm[+state.c3], on = state.d3 === "on";
+    $("m3plaque").innerHTML = "<b>CHAUFFE-EAU ÉLECTRIQUE</b><br>Capacité : 150 L<br>Tension : <b>230 V ~</b><br>Puissance : <b>" + fr(V.P3, 0) + " W</b>";
+    var out, cls = "", txt;
+    if(on){ out = "----"; cls = "danger"; txt = "<b>Danger !</b> On ne mesure jamais une résistance sous tension. Ouvre d'abord le disjoncteur."; }
+    else {
+      out = etat === 0 ? fr(Rth, 1) : etat === 1 ? "OL" : "0,2";
+      cls = "ok"; txt = "Mesure hors tension : c'est la bonne méthode. Note la valeur du client " + "ABC"[+state.c3] + " dans ton compte rendu.";
+    }
+    $("m3R").textContent = out; msg("m3msg", cls, txt);
+    // dessin : cuve, résistance, cordons vers l'ohmmètre
+    var s = '<rect x="120" y="14" width="190" height="200" rx="40" class="mt"/>' +
+      '<text x="215" y="56" class="lbl" text-anchor="middle">Chauffe-eau</text><text x="215" y="76" class="lbl-m" text-anchor="middle">client ' + "ABC"[+state.c3] + '</text>' +
+      '<polyline points="185,200 185,110 200,120 215,110 230,120 245,110 245,200" fill="none" stroke="var(--warn)" stroke-width="4" stroke-linejoin="round"/>' +
+      '<text x="262" y="150" class="lbl-m">résistance</text><text x="262" y="166" class="lbl-m">chauffante</text>' +
+      wire(185,200,185,240) + wire(245,200,245,240) + dot(185,240) + dot(245,240) +
+      '<path d="M185 240 C 185 268, 360 268, 380 230" fill="none" stroke="var(--danger)" stroke-width="2.5"/>' +
+      '<path d="M245 240 C 245 258, 360 258, 400 230" fill="none" stroke="var(--ink)" stroke-width="2.5"/>' +
+      '<rect x="360" y="150" width="70" height="82" rx="8" class="mt"/><text x="395" y="186" class="mtl">Ω</text>' +
+      '<text x="395" y="210" class="lbl-m" text-anchor="middle">ohmmètre</text>' +
+      '<rect x="20" y="20" width="70" height="44" rx="6" class="mt"/><text x="55" y="47" class="lbl" text-anchor="middle" style="fill:'+(on?"var(--danger)":"var(--ok)")+'">'+(on?"I":"O")+'</text>' +
+      '<text x="55" y="84" class="lbl-m" text-anchor="middle">disjoncteur</text>' + (on ? '<text x="55" y="102" class="lbl-m" text-anchor="middle" style="fill:var(--danger)">230 V</text>' : "");
+    $("svg3").innerHTML = s;
+  }
+  hooks.c3 = render3; hooks.d3 = render3;
+
+  // ================= MISSION 4 =================
+  var R4 = [100, 150, 220, 330, 470, 680, 1000, 1500, 2200], burned = false;
+  (function(){
+    var box = document.querySelector('[data-grp="r4"]'), h = '<button type="button" data-v="none">aucune</button>';
+    R4.forEach(function(r){ h += '<button type="button" data-v="'+r+'">'+(r >= 1000 ? fr(r/1000, r % 1000 ? 1 : 0) + " kΩ" : r + " Ω")+'</button>'; });
+    box.innerHTML = h;
+  })();
+  function render4(){
+    var U = V.U4, r = state.r4 === "none" ? 0 : +state.r4, I = r ? (U - 2) / r : Infinity, newBurn = false;
+    if(!burned && I >= 0.030){ burned = true; newBurn = true; }
+    var Ireal = burned ? 0 : I;
+    $("m4A").textContent = burned ? "0,0" : fr(Ireal*1000, 1);
+    $("m4UR").textContent = burned ? "0,00" : fr(r ? U - 2 : 0, 2);
+    $("m4new").hidden = !burned;
+    if(newBurn) msg("m4msg", "danger", "<b>La LED a grillé !</b> L'intensité dépassait 30 mA." + (r ? "" : " Sans résistance, rien ne limite le courant."));
+    else if(burned) msg("m4msg", "danger", "La LED est grillée : plus aucun courant ne passe. Remplace-la.");
+    else if(I < 0.010) msg("m4msg", "warn", "La LED éclaire très faiblement : l'intensité est trop petite.");
+    else if(I > 0.024) msg("m4msg", "warn", "La LED éclaire fort, mais l'intensité est un peu élevée : elle s'usera vite.");
+    else msg("m4msg", "ok", "La LED éclaire bien. Relève l'intensité pour la question 15.");
+    var b = burned ? 0 : Math.min(1, Ireal / 0.02);
+    var L = 90, R = 330, T = 50, B = 220, Y = 135, s = "";
+    s += wire(L,T,L,Y-6) + wire(L,Y+6,L,B) + wire(L,B,R,B) + battery(L,Y,U+" V");
+    s += wire(L,T,250-28,T) + wire(250+28,T,R,T) + meter(155,T,"A");
+    s += r ? resH(250,T,"R") : wire(222,T,278,T) + '<text x="250" y="'+(T-12)+'" class="lbl-m" text-anchor="middle">aucune R</text>';
+    s += wire(R,T,R,Y-12) + wire(R,Y+12,R,B);
+    if(b > 0) s += '<circle cx="'+R+'" cy="'+Y+'" r="'+(18+16*b)+'" fill="var(--led)" opacity="'+(0.15+0.35*b)+'"/>';
+    s += '<polygon points="'+(R-13)+','+(Y-12)+' '+(R+13)+','+(Y-12)+' '+R+','+(Y+12)+'" fill="'+(burned ? "#333" : b > 0 ? "var(--led)" : "var(--surface)")+'" stroke="var(--ink)" stroke-width="2"/>' + wire(R-13,Y+12,R+13,Y+12);
+    s += '<path d="M'+(R+18)+' '+(Y-14)+' l14 -14 m-6 0 h6 v6 M'+(R+22)+' '+(Y-2)+' l14 -14 m-6 0 h6 v6" fill="none" stroke="var(--ink)" stroke-width="1.6"/>';
+    s += '<text x="'+(R+24)+'" y="'+(Y+30)+'" class="lbl">LED rouge</text><text x="'+(R+24)+'" y="'+(Y+48)+'" class="lbl-m">2 V · 20 mA</text>';
+    if(burned) s += '<text x="'+(R-24)+'" y="'+(Y+5)+'" class="lbl" text-anchor="end" style="fill:var(--danger)">grillée</text>';
+    $("svg4").innerHTML = s;
+  }
+  hooks.r4 = render4;
+  $("m4new").addEventListener("click", function(){ burned = false; render4(); });
+
+  // ================= MISSION 5 =================
+  var APPS = [["Bouilloire", 2200], ["Radiateur d'appoint", 1500], ["Micro-ondes", 1000], ["Grille-pain", 800], ["Réfrigérateur", 150], ["Radio", 20], ["Lampe LED", 10]];
+  var on5 = {}, tripped = false;
+  (function(){
+    var h = "";
+    APPS.forEach(function(a, i){ h += '<label class="app" id="app'+i+'"><input type="checkbox" data-i="'+i+'"><span>'+a[0]+'<span class="p">'+fr(a[1], 0)+' W</span></span></label>'; });
+    $("m5apps").innerHTML = h;
+    $("m5apps").addEventListener("change", function(e){ var i = e.target.dataset.i; if(i === undefined) return; on5[i] = e.target.checked; render5(true); });
+  })();
+  function total5(){ var p = 0; APPS.forEach(function(a, i){ if(on5[i]) p += a[1]; }); return p / 230; }
+  function render5(changed){
+    var I = total5();
+    if(!tripped && I > 16){ tripped = true; }
+    $("m5I").textContent = tripped ? "0,0" : fr(I, 1);
+    $("m5state").textContent = tripped ? "déclenché (ouvert)" : "fermé";
+    $("m5reset").hidden = !tripped;
+    APPS.forEach(function(a, i){ $("app"+i).classList.toggle("off", tripped); });
+    if(tripped) msg("m5msg", "danger", "<b>Clac !</b> Le disjoncteur a déclenché : l'intensité dépassait 16 A. Plus rien ne fonctionne dans la cuisine.");
+    else if(I > 13) msg("m5msg", "warn", "Attention, tu es proche de la limite de 16 A.");
+    else msg("m5msg", "", "");
+  }
+  $("m5reset").addEventListener("click", function(){
+    if(total5() > 16){ msg("m5msg", "danger", "Le disjoncteur redéclenche aussitôt : il faut d'abord débrancher un appareil (décoche une case)."); return; }
+    tripped = false; render5();
+  });
+
+  // ================= MISSION 6 =================
+  var RHO = 1.7e-8, RRAD = 230*230/2000, temp6 = 20, timer6 = null;
+  function cable6(){ return Math.round(RHO * 2 * (+state.l6) / (+state.s6 * 1e-6) * 100) / 100; }
+  function target6(){
+    if(state.p6 !== "on") return 20;
+    var R = cable6(), I = 230 / (RRAD + R), P = R * I * I;
+    return 20 + P * (state.e6 === "in" ? 0.9 : 0.08);
+  }
+  function render6(){
+    var R = cable6(), on = state.p6 === "on", I = on ? 230 / (RRAD + R) : 0;
+    $("m6R").textContent = on ? "----" : fr(R, 2);
+    $("m6I").textContent = fr(I, 2);
+    var t = Math.round(temp6);
+    $("m6T").textContent = t;
+    var bar = $("m6bar"); bar.style.width = Math.min(100, (temp6 - 15) / 85 * 100) + "%";
+    bar.style.background = t >= 70 ? "var(--danger)" : t >= 45 ? "var(--warn)" : "var(--ok)";
+    if(on && t >= 70) msg("m6msg", "danger", "<b>Danger !</b> L'enrouleur est brûlant : l'isolant des fils ramollit, risque d'incendie.");
+    else if(on && t >= 45) msg("m6msg", "warn", "L'enrouleur chauffe nettement.");
+    else if(on) msg("m6msg", "ok", "Le radiateur chauffe. Pour l'ohmmètre, il faut repasser hors tension.");
+    else msg("m6msg", "ok", "Hors tension : tu peux mesurer la résistance du câble.");
+    var s = '<rect x="10" y="80" width="56" height="70" rx="8" class="mt"/><circle cx="30" cy="115" r="4" class="dot"/><circle cx="46" cy="115" r="4" class="dot"/><text x="38" y="170" class="lbl-m" text-anchor="middle">prise 230 V</text>';
+    if(state.e6 === "in"){
+      s += wire(66,115,140,115) + '<circle cx="190" cy="115" r="56" class="mt"/>';
+      for(var k = 1; k <= 7; k++) s += '<circle cx="190" cy="115" r="'+(10+k*6)+'" fill="none" stroke="'+(t>=70?"var(--danger)":t>=45?"var(--warn)":"var(--ink)")+'" stroke-width="2"/>';
+      s += wire(246,115,330,115);
+    } else {
+      s += '<circle cx="110" cy="115" r="22" class="mt"/><circle cx="110" cy="115" r="12" fill="none" stroke="var(--ink)" stroke-width="2"/>' + wire(66,115,88,115);
+      s += '<path d="M132 115 C 160 40, 190 190, 220 115 S 280 40, 330 115" fill="none" stroke="var(--ink)" stroke-width="3"/>';
+    }
+    s += '<text x="190" y="200" class="lbl-m" text-anchor="middle">enrouleur ' + state.l6 + ' m · ' + state.s6.replace(".", ",") + ' mm²</text>';
+    s += '<rect x="330" y="70" width="120" height="90" rx="6" class="mt"/>';
+    for(var j = 0; j < 6; j++) s += '<line x1="'+(348+j*17)+'" y1="82" x2="'+(348+j*17)+'" y2="148" stroke="'+(on?"var(--danger)":"var(--muted)")+'" stroke-width="5" stroke-linecap="round"/>';
+    s += '<text x="390" y="180" class="lbl-m" text-anchor="middle">radiateur 2 000 W</text>';
+    $("svg6").innerHTML = s;
+  }
+  function tick6(){
+    var tg = target6();
+    temp6 += (tg - temp6) * 0.12;
+    if(Math.abs(tg - temp6) < 0.3){ temp6 = tg; clearInterval(timer6); timer6 = null; }
+    render6();
+  }
+  function change6(){ if(!timer6) timer6 = setInterval(tick6, 250); render6(); }
+  hooks.l6 = change6; hooks.s6 = change6; hooks.e6 = change6; hooks.p6 = change6;
+
+  // ================= MISSION 7 =================
+  function render7(){
+    var I = (+state.u7) / (+state.r7) * 1000, diff = state.d7 === "yes";
+    $("m7I").textContent = fr(I, I < 10 ? 1 : 0);
+    // échelle par morceaux : 0,1-0,5 mA (20 %), 0,5-10 (30 %), 10-30 (16 %), 30-1000 (34 %)
+    var segs = [[0.1,0.5,0,20],[0.5,10,20,50],[10,30,50,66],[30,1000,66,100]], pos = 0;
+    segs.forEach(function(g){ if(I >= g[0]) pos = g[2] + (g[3]-g[2]) * Math.min(1, Math.log(I/g[0]) / Math.log(g[1]/g[0])); });
+    $("m7needle").style.left = pos + "%";
+    if(I < 0.5) msg("m7msg", "ok", "Le courant n'est pas ressenti.");
+    else if(I < 10) msg("m7msg", "ok", "Picotements, petite secousse : désagréable mais pas dangereux.");
+    else if(I < 30) msg("m7msg", "warn", "Les muscles se contractent : il devient difficile de lâcher le fil. Douloureux, mais en dessous du seuil de 30 mA.");
+    else msg("m7msg", "danger", "<b>Danger de mort</b> (plus de 30 mA) : la respiration peut s'arrêter et le cœur se dérégler.");
+    var d = $("m7diff");
+    if(diff && I >= 30){ d.hidden = false; d.className = "msg ok"; d.innerHTML = "Le différentiel 30 mA détecte ce courant qui passe par le corps au lieu de revenir par les fils. Il coupe le courant en quelques centièmes de seconde : la personne a reçu un choc, mais très court."; }
+    else if(diff){ d.hidden = false; d.className = "msg warn"; d.innerHTML = "Le différentiel 30 mA ne coupe pas : l'intensité est inférieure à son seuil."; }
+    else d.hidden = true;
+  }
+  hooks.u7 = render7; hooks.r7 = render7; hooks.d7 = render7;
+
+  // ================= MISSION 8 =================
+  function render8(){
+    var P = {console: {on: 180, veille: V.PV8}, tv: {on: 90, veille: 0.5}, box: {on: 12, veille: 12}}[state.a8][state.m8];
+    $("m8P").textContent = fr(P, P < 1 ? 1 : 0);
+    var t = state.a8 === "box" ? "La box n'a pas vraiment de mode veille : elle consomme tout le temps la même puissance."
+      : state.m8 === "veille" ? "Appareil en veille : l'écran est noir, mais la prise wattmètre mesure quand même une puissance." : "Appareil en marche.";
+    msg("m8msg", "ok", t);
+  }
+  hooks.a8 = render8; hooks.m8 = render8;
+
+  // ---------- onglets ----------
+  var titles = ["Appareils de mesure","Résistance mystère","Chauffe-eau","Voyant LED","Multiprise","Enrouleur","Sécurité","Facture"];
+  var cur = parseInt(store("ohm-tab") || "1", 10); if(!(cur >= 1 && cur <= 8)) cur = 1;
+  (function(){
+    var h = "";
+    titles.forEach(function(t, i){ h += '<button type="button" role="tab" id="tab'+(i+1)+'" aria-controls="m'+(i+1)+'" data-m="'+(i+1)+'" title="'+t+'">'+(i+1)+'. '+t+'</button>'; });
+    $("tabs").innerHTML = h;
+    $("tabs").addEventListener("click", function(e){ var b = e.target.closest("button"); if(b) show(+b.dataset.m); });
+  })();
+  function show(m){
+    cur = m; store("ohm-tab", String(m));
+    for(var i = 1; i <= 8; i++){ $("m"+i).hidden = i !== m; $("tab"+i).setAttribute("aria-selected", i === m ? "true" : "false"); }
+    $("prev").disabled = m === 1; $("next").hidden = m === 8;
+  }
+  $("prev").addEventListener("click", function(){ if(cur > 1){ show(cur - 1); $("tabs").scrollIntoView({behavior:"smooth"}); } });
+  $("next").addEventListener("click", function(){ if(cur < 8){ show(cur + 1); $("tabs").scrollIntoView({behavior:"smooth"}); } });
+
+  ["v1","a1","c3","d3","r4","l6","s6","e6","p6","u7","r7","d7","a8","m8"].forEach(bindSeg);
+  function renderAll(){ render1(); render2(); plot2(); render3(); render4(); render5(); render6(); render7(); render8(); }
+  loadM2(); renderAll(); show(cur);
+})();
+</script>
+</body>
+</html>
